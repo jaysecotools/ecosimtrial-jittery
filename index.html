@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tasmanian Ecosystem Simulator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Arial&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Tasmanian Ecosystem Simulator 🌿</h1>
+  <div id="medalIcon">🎖️</div>
+  <div class="points-display">Points: <span id="pointsDisplay">0</span></div>
+  <div class="objectives-display">Objective: <span id="objectiveDisplay">Increase pademelon population to 100</span></div>
+  <div id="ecosystemHealth">Health: HEALTHY</div>
+  <div id="rangerBadge" style="display: none;">
+    <p>🎖️ Congratulations! You've earned the Ranger Badge!</p>
+    <div id="achievementsContainer"></div>
+  </div>
+  
+  <div class="controls">
+    <div class="control-group">
+      <label>Rainfall: <input type="range" min="0" max="100" value="50" id="rainfall"> <span id="rainfallValue" class="slider-value">50</span></label>
+    </div>
+    <div class="control-group">
+      <label>Temperature: <input type="range" min="0" max="50" value="25" id="temperature"> <span id="temperatureValue" class="slider-value">25</span></label>
+    </div>
+    <div class="control-group">
+      <label>Invasive Species: <input type="range" min="0" max="20" value="5" id="invasiveSpecies"> <span id="invasiveSpeciesValue" class="slider-value">5</span></label>
+    </div>
+    <div class="control-group">
+      <label>Human Impact: <input type="range" min="0" max="10" value="2" id="humanImpact"> <span id="humanImpactValue" class="slider-value">2</span></label>
+    </div>
+    <button id="resetButton">Reset</button>
+    <button id="exportCSV">Export CSV</button>
+    <button id="pauseButton">Pause</button>
+    <button id="toggleGrassLimitButton">Disable Grass Limit</button>
+  </div>
+  
+  <div id="canvas-container"></div>
+  <div id="disasterMessage">Natural Disaster Occurred!</div>
+  <div id="seasonDisplay">Season: Spring</div>
+  
+  <div class="speed-control-container">
+    <div class="speed-control">
+      <label for="speedSlider">Simulation Speed:</label>
+      <input type="range" id="speedSlider" min="0.1" max="5" step="0.1" value="1">
+      <span id="speedValue">1x</span>
+    </div>
+  </div>
+  
+  <div class="toggle-container">
+    <label for="toggleSeasons">Toggle Seasons Display</label>
+    <input type="checkbox" id="toggleSeasons" checked>
+  </div>
+  <div class="toggle-container">
+    <label for="toggleDisasters">Toggle Natural Disasters</label>
+    <input type="checkbox" id="toggleDisasters" checked>
+  </div>
+  
+  <canvas id="populationChart" width="800" height="400"></canvas>
+  
+  <div class="legend">
+    <div><span class="legend-color" style="background-color: #d4f1f4;"></span>Spring</div>
+    <div><span class="legend-color" style="background-color: #f7d794;"></span>Summer</div>
+    <div><span class="legend-color" style="background-color: #f5cd79;"></span>Autumn</div>
+    <div><span class="legend-color" style="background-color: #c8d6e5;"></span>Winter</div>
+  </div>
+  
+  <button class="collapsible" aria-expanded="false">Species Information <span class="arrow">&#9654;</span></button>
+  <div class="content">
+    <div id="info-panels">
+      <h2>Species Information</h2>
+      <div id="grass-info">
+        <h3>Grass</h3>
+        <p>Grass is the primary producer in the ecosystem, providing food for herbivores like pademelons.</p>
+      </div>
+      <div id="pademelons-info">
+        <h3>Pademelons</h3>
+        <p>Pademelons are herbivores that feed on grass and are prey for Tasmanian devils.</p>
+      </div>
+      <div id="devils-info">
+        <h3>Tasmanian Devils</h3>
+        <p>Tasmanian devils are the apex predators in this ecosystem, feeding on pademelons.</p>
+      </div>
+      <div id="bandicoots-info">
+        <h3>Bandicoots</h3>
+        <p>Bandicoots are keystone species that improve grass growth and are affected by devils and invasive species.</p>
+      </div>
+    </div>
+  </div>
+  
+  <button class="collapsible" aria-expanded="false">Quizzes <span class="arrow">&#9654;</span></button>
+  <div class="content">
+    <div id="quizzes">
+      <h2>Quizzes</h2>
+      <p>Test your understanding of the ecosystem dynamics with these questions:</p>
+      <div id="quiz1">
+        <h3>Quiz 1</h3>
+        <p>What happens to the pademelon population if the grass population decreases significantly?</p>
+        <button onclick="showAnswer('quiz1-answer')">Show Answer</button>
+        <p id="quiz1-answer" style="display:none;">The pademelon population will decrease because they rely on grass as their primary food source.</p>
+      </div>
+      <div id="quiz2">
+        <h3>Quiz 2</h3>
+        <p>How does an increase in temperature affect the Tasmanian devil population?</p>
+        <button onclick="showAnswer('quiz2-answer')">Show Answer</button>
+        <p id="quiz2-answer" style="display:none;">An increase in temperature can negatively affect the Tasmanian devil population by reducing their prey availability and increasing stress.</p>
+      </div>
+      <div id="quiz3">
+        <h3>Quiz 3</h3>
+        <p>What role do bandicoots play in promoting grass growth, and how does this benefit the ecosystem as a whole?</p>
+        <button onclick="showAnswer('quiz3-answer')">Show Answer</button>
+        <p id="quiz3-answer" style="display:none;">Bandicoots improve soil aeration, which helps grass grow more robustly. This benefits herbivores like pademelons, leading to a healthier and more balanced ecosystem.</p>
+      </div>
+    </div>
+  </div>
+  
+  <button class="collapsible" aria-expanded="false">Interconnectedness of Ecosystems <span class="arrow">&#9654;</span></button>
+  <div class="content left-align">
+    <div id="ecosystem-info">
+      <h2>Interconnectedness of Ecosystems</h2>
+      <p>Understanding the interconnectedness of ecosystems is crucial for appreciating the balance of nature. Here are a few key points:</p>
+      <ul>
+        <li><strong>Food Webs:</strong> All species are part of a complex food web. Changes in one population can ripple through the entire ecosystem.</li>
+        <li><strong>Energy Flow:</strong> Energy flows from producers (like grass) to consumers (like pademelons and devils). Disruptions at any level affect the entire system.</li>
+        <li><strong>Habitat Interdependence:</strong> Different species rely on each other for habitat and resources. Loss of one species can lead to habitat changes that affect others.</li>
+        <li><strong>Human Impact:</strong> Human activities can have significant effects on ecosystems, from pollution to habitat destruction. Understanding these impacts is key to conservation.</li>
+        <li><strong>Climate Change:</strong> Changes in climate can alter ecosystems, affecting species distributions and interactions. Studying these changes helps predict future impacts.</li>
+      </ul>
+    </div>
+  </div>
+  
+  <script src="script.js"></script>
+  <footer>
+    Created by Jay Rowley 2025
+  </footer>
+</body>
+</html>
